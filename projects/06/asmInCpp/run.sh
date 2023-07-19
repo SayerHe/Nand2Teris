@@ -1,3 +1,3 @@
 make clean
 make
-./build/main.exe
+./build/main

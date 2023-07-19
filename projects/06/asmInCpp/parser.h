@@ -21,6 +21,8 @@ namespace Parser{
         private:
             std::fstream fstrm;
             int lineId = 0;
+            int openFlag = -1;
             std::string instruction;
-};
+            std::string currentLine;
+        };
 }
