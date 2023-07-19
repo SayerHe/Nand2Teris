@@ -13,14 +13,14 @@ void symbolic2machineLanguage(SymbolTable::SymbolTable &table, Code::Code code, 
 void writeSymbolTable(SymbolTable::SymbolTable &table, Parser::Parser &parser);
 
 int main(){
-    string filename = "../pong/Pong.asm";
-    string outputFile = "../pong/Pong.hack";
+    string filename = "../max/Max.asm";
+    string outputFile = "../max/Max.hack";
     ofstream ofstrm(outputFile);
     Parser::Parser parserForSymbolTable(filename);
     Parser::Parser parserForMachineLanguage(filename);
     Code::Code code;
     SymbolTable::SymbolTable table;
-    
+    //由于在使用COMMAND_L时，允许先使用再定义，需要先进行一次遍历，来缓存每个(xx)标签对应的命令地址
     writeSymbolTable(table, parserForSymbolTable);
     symbolic2machineLanguage(table, code, parserForMachineLanguage, ofstrm);
     
@@ -32,10 +32,6 @@ void writeSymbolTable(SymbolTable::SymbolTable &table, Parser::Parser &parser){
         parser.advance();
         if (parser.commandType() == L_COMMAND){
             table.addInstructionEntry(parser.symbol(), instructionIdx);
-        } else if (parser.commandType() == A_COMMAND && !isdigit(parser.symbol()[0])) {
-            if (!table.contains(parser.symbol())) {
-                table.addVarEntry(parser.symbol());
-            }
         }
         if (parser.commandType() != L_COMMAND) instructionIdx++;
     }
@@ -49,6 +45,9 @@ void symbolic2machineLanguage(SymbolTable::SymbolTable &table, Code::Code code, 
             if (isdigit(symbol[0])){
                 ofstrm << code.aCommand(symbol) << endl;;
             } else {
+                if (!table.contains(parser.symbol())){
+                    table.addVarEntry(symbol);    // A命令中的自定义变量在第一次遍历中并没有加入缓存；
+                } 
                 ofstrm << std::bitset<16>(table.GetAddress(symbol)).to_string() << endl;
             }
         } else if (parser.commandType() == C_COMMAND){

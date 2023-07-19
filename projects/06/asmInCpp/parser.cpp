@@ -11,6 +11,7 @@ namespace Parser
     //读取的string会存在current里，并更新openFlag，advance根据openFlag的状态更新instruction
     bool Parser::hasMoreCommands(){
         if (openFlag == -1 && fstrm.fail()) return false;
+        if (instruction != currentLine && openFlag) return true;  // 连续使用hasMoreCommands但不调用advance时
         auto uselessInstruction = [](std::string instruction)->bool{
             if (instruction.substr(0, 2) == "//") return true;
             while(instruction.size() && isspace(instruction.back())) instruction.pop_back();

@@ -12,3 +12,5 @@ build/main.o: main.cpp
 
 clean:
 	rm -rf ./build/*
+
+# makefile写的跟shit一样；；；；；；；
