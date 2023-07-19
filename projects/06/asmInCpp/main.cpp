@@ -37,7 +37,7 @@ void writeSymbolTable(SymbolTable::SymbolTable &table, Parser::Parser &parser){
                 table.addVarEntry(parser.symbol());
             }
         }
-        instructionIdx++;
+        if (parser.commandType() != L_COMMAND) instructionIdx++;
     }
 }
 
