@@ -24,5 +24,6 @@ namespace Parser{
             int openFlag = -1;
             std::string instruction;
             std::string currentLine;
+            std::string strip(std::string str);
         };
 }

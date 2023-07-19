@@ -23,7 +23,8 @@ namespace Parser
 
     void Parser::advance(){
         if(openFlag){
-            instruction = currentLine;
+            // 去除行内注释和左右空格
+            instruction = strip(std::string(currentLine.begin(), find(currentLine.begin(), currentLine.end(), '/')));
             lineId ++;
         }
     }
@@ -32,25 +33,36 @@ namespace Parser
         else if (instruction[0] == '(') return L_COMMAND;
         else return C_COMMAND;
     }
+    std::string Parser::strip(std::string str){
+        int left=0, right=str.size()-1;
+        while(str[left] == ' ') ++left;
+        while(str[right] == ' ') --right;
+        return str.substr(left, right-left+1);
+    }
+    // 每个部分都可能含有冗余空格，需要去除
     std::string Parser::symbol(){
-        return commandType() == 0 ? instruction.substr(1, instruction.size()-1) : "";
+        if (commandType() == A_COMMAND){
+            return strip(instruction.substr(1, instruction.size()-1));
+        } else if (commandType() == L_COMMAND){
+            return strip(instruction.substr(1, instruction.size()-2));
+        } else return "";
     }
     // A = A+D; JMP
     std::string Parser::dest(){
         auto eqIdx = find(instruction.begin(), instruction.end(), '=');
         if (eqIdx == instruction.end()) return "";
-        else return commandType() == 1 ? std::string(instruction.begin(), eqIdx) : "";
+        else return commandType() == C_COMMAND ? strip(std::string(instruction.begin(), eqIdx)) : "";
     }
     std::string Parser::comp(){
         auto eqIdx = find(instruction.begin(), instruction.end(), '=');
         auto questionIdx = find(instruction.begin(), instruction.end(), ';');
-        if (eqIdx == instruction.end()) return std::string(instruction.begin(), questionIdx);
-        else return std::string(eqIdx+1, questionIdx);
+        if (eqIdx == instruction.end()) return strip(std::string(instruction.begin(), questionIdx));
+        else return strip(std::string(eqIdx+1, questionIdx));
     }
     std::string Parser::jump(){
         auto questionIdx = find(instruction.begin(), instruction.end(), ';') == instruction.end()\
                         ? instruction.end(): find(instruction.begin(), instruction.end(), ';')+1;
-        return commandType() == 1 ? std::string(questionIdx, instruction.end()) : "";
+        return commandType() == C_COMMAND ? strip(std::string(questionIdx, instruction.end())) : "";
     }
 } // namespace Parser
 
