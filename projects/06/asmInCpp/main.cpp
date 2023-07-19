@@ -13,8 +13,8 @@ void symbolic2machineLanguage(SymbolTable::SymbolTable &table, Code::Code code, 
 void writeSymbolTable(SymbolTable::SymbolTable &table, Parser::Parser &parser);
 
 int main(){
-    string filename = "../rect/Rect.asm";
-    string outputFile = "../rect/Rect.hack";
+    string filename = "../pong/Pong.asm";
+    string outputFile = "../pong/Pong.hack";
     ofstream ofstrm(outputFile);
     Parser::Parser parserForSymbolTable(filename);
     Parser::Parser parserForMachineLanguage(filename);
